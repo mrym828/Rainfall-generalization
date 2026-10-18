@@ -1,5 +1,28 @@
 # Decisions
 
+## D1 : Use recent local rainfall as a feature?
+
+**Decision:** Build two feature sets and compare them.
+- Set A: no rainfall history (weather of month t, month-of-year, ..).
+- Set B: Set A plus rainfall of recent months at the same station.
+
+**Reason:** Set B tests "a station left out of training that still has a working rain gauge". Set A tests "a station without local rainfall history". They answer different questions, so both are reported separately.
+
+**Rules:**
+- Same held-out stations and same test months for both sets.
+- Never use 0 to stand for "no measurement".
+- Data of the held-out station is not used for training, tuning, or preprocessing.
+
+**Location features (latitude, longitude, elevation):**
+Excluded from the main comparison of Set A and Set B. With only 5 training
+stations they can act as a station identifier, so the model may memorise
+station-level rainfall instead of learning weather-rainfall relations.
+They are kept in the stations table and used in the analysis of results.
+If time allows, one extra experiment adds them, with the same models and test
+months. If they enter the final model, the choice is made with an inner
+leave-one-station-out evaluation on the training stations only, never using the
+held-out station.
+
 ## D3: Minimum valid rainfall days per month
 
 **Decision:** A station-month is kept only if it has at least 28 days with valid PRCP (non-NaN) value. Otherwise its monthly rainfall is set to NaN.
