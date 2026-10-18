@@ -10,7 +10,8 @@ MISSING_CODES ={
     'WDSP': 999.9,
     'MXSPD': 999.9,
     'VISIB': 999.9,
-    'SLP': 9999.9
+    'SLP': 9999.9,
+    'GUST': 999.9
 }
 
 def replace_missing_values(df) -> pd.DataFrame:
@@ -55,15 +56,19 @@ def convert_units(df) -> pd.DataFrame:
     # Convert precipitation from hundredths of inches to mm
     if 'PRCP' in converted_df.columns:
         converted_df['PRCP'] = converted_df['PRCP'] * 25.4  # Convert to mm
+    if 'SNDP' in converted_df.columns:
+            converted_df['SNDP'] = converted_df['SNDP'] * 25.4 # Convert to mm
 
     # convert wind speed from knots to km/s
     if 'WDSP' in converted_df.columns:
         converted_df['WDSP'] = converted_df['WDSP'] * 1.852  # Convert to km/h
     if 'MXSPD' in converted_df.columns:
         converted_df['MXSPD'] = converted_df['MXSPD'] * 1.852  # Convert to km/h
+    if 'GUST' in converted_df.columns:
+        converted_df['GUST'] = converted_df['GUST'] * 1.852 # Convert to km/h
 
     # convert visibility from miles to km
     if 'VISIB' in converted_df.columns: 
-        converted_df['VISIB'] = converted_df['VISIB'] * 1.60934  # Convert to km    
+        converted_df['VISIB'] = converted_df['VISIB'] * 1.60934  # Convert to km   
 
     return converted_df

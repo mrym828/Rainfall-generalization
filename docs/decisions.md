@@ -40,3 +40,16 @@ held-out station.
 - The monthly table must contain every month for every station, with NaN where a month is missing, so that the "next month" shift works by calendar date.
 
 **Applied in:** monthly aggregation, after replacing PRCP missing codes with NaN.
+
+
+## D6: Sea-level pressure (SLP) as a predictor
+
+**Decision:** Retain SLP in cleaned data for documentation, but omit it from the main forecasting features. 
+
+**Evidence (daily NOAA GSOD, 1996–2023):**
+- Overall missing SLP: 17.147%.
+- Fujairah: 44.631% missing; 100% missing in 1996–2003 and 2022 (nine full years).
+- Al Ain: 22.557% missing; 100% missing in 2001–2003.
+- Dubai: 12.852%; RAK: 8.198%; Sharjah: 8.123%; Abu Dhabi: 6.605%.
+
+**Rationale:** SLP is meteorologically relevant, but long and uneven station-specific gaps would require extensive imputation and could distort the cross-station generalization comparison. Exclusion is a data-quality decision, not a claim that pressure is unimportant for rainfall.
