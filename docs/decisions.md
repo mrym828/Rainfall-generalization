@@ -25,22 +25,89 @@ held-out station.
 
 ## D3: Minimum valid rainfall days per month
 
-**Decision:** A station-month is kept only if it has at least 28 days with valid PRCP (non-NaN) value. Otherwise its monthly rainfall is set to NaN.
+**Decision:** A station-month must contain at least 28 valid daily precipitation observations for its monthly rainfall total to be considered a valid target.
 
-**Reason:** Missing days make the monthly rainfall total lower than the true value, so a month with many missing days would teach the models wrong targets. A month with 28 or more valid days is close enough to complete to trust.
+Station-months that do not meet this requirement will have their monthly precipitation targets set to NaN, rather than zero. The station-month records will be preserved, and other meteorological features may still be used if they satisfy their respective quality requirements.
 
-**Evidence:** Counted valid PRCP days for every station-month (6 stations x 336 months = 2016).
-- Threshold 28: 23 station-months lost (1.1%).
-- Threshold 25: 9 lost. Threshold 20: 3 lost.
-- The 23 lost at threshold 28 are 22 months with fewer than 28 valid days and 1 month with no rows at all (Ras Al Khaimah, January 2006).
+The 28-day threshold remains the provisional primary criterion until further sensitivity experiments are completed.
+
+
+**Reason:** Missing daily precipitation observations may cause the recorded monthly precipitation total to underestimate the actual rainfall amount, particularly when rainfall is concentrated in a small number of days.
+
+The 28-day threshold was selected as an initial quality-control criterion to reduce the risk of unreliable rainfall targets. However, meeting this threshold does not guarantee that the monthly precipitation total is accurate.
+
+**Evidence:** Daily precipitation completeness was assessed across six UAE weather stations from January 1996 to December 2023, representing 2,016 expected station-month combinations.
+
+The analysis was conducted after replacing NOAA precipitation missing-value codes with NaN and reconstructing the complete station-month calendar.
+
+The following results were obtained:
+
+| Completeness criterion | Accepted months | Rejected months | Retention |
+|--------------|--------| --------- | -------- | 
+| ≥25 valid days | 1,992 | 24 | 98.81% |
+|≥28 valid days | 1,889 | 127 | 93.70% |
+| ≥30 valid days | 1,579 | 437 | 78.32% |
+| ≥90% monthly completeness | 1,941 |75 | 96.28% |
+
+Under the primary 28-day criterion, 127 station-months (6.30%) did not satisfy the completeness requirement.
+
+The complete calendar also identified January 2006 at Ras Al Khaimah as an entirely missing station-month, which was absent from the original monthly grouping.
 
 **Notes:**
-- February needs all of its days (28 or 29), because the limit is fixed at 28.
-- Ras Al Khaimah has a gap of about 69 days from December 2005 to mid-February 2006, during the rainy season.
-- The monthly table must contain every month for every station, with NaN where a month is missing, so that the "next month" shift works by calendar date.
+- The number of calendar days varies across months.
 
-**Applied in:** monthly aggregation, after replacing PRCP missing codes with NaN.
+- February contains 28 days in a regular year and 29 days in a leap year.
 
+- Under the fixed 28-day threshold, a regular February requires all 28 observations, whereas a leap-year February may have one missing observation.
+
+- A month with insufficient precipitation observations must not automatically be interpreted as having zero rainfall.
+
+- The complete station-month calendar must be preserved to ensure correct chronological alignment when constructing next-month rainfall targets.
+
+- Missing precipitation targets do not automatically require the removal of other valid meteorological predictors.
+
+**Applied in:** 
+
+The completeness criteria have been investigated and validated in notebooks/01_data_inspection. ipynb.
+
+Application of the selected threshold to monthly precipitation totals is planned for the monthly aggregation implementation.
+
+### D3 — Completeness Threshold Sensitivity Assessment
+
+**Alternative Criterion:**
+
+A relative completeness threshold of at least 90% was investigated to account for differences in calendar-month lengths.
+
+Relative monthly precipitation completeness was calculated as:
+
+
+$$ Completeness (\%) = valid PRCP days/calendar days in month*100$$
+
+**Results:**
+
+The 90% criterion accepted 1,941 station-months (96.28%), compared with 1,889 station-months (93.70%) under the fixed 28-day criterion.
+
+Therefore, the relative criterion accepted 52 additional station-months, increasing retention by approximately 2.58 percentage points.
+
+Validation confirmed that no station-month accepted by the 28-day criterion was rejected by the 90% criterion.
+
+**Interpretation:**
+
+The percentage-based criterion accounts for differences in month lengths and may provide a more consistent measure of relative completeness.
+
+For example, February 1996 contained 27 valid precipitation observations out of 29 calendar days, giving a completeness rate of approximately 93.10%. This month is rejected by the fixed 28-day criterion but accepted by the 90% criterion.
+
+However, retaining additional station-months does not necessarily improve rainfall target reliability. Missing daily observations may include rainfall events, causing monthly precipitation totals to be underestimated.
+
+**Research Decision:**
+
+The fixed 28-day criterion will remain the provisional primary threshold.
+
+The 90% relative completeness criterion will be retained as an alternative for sensitivity analysis.
+
+Both criteria will be evaluated using Leave-One-Station-Out (LOSO) cross-validation, with consistent model configurations and comparable, reliable evaluation targets.
+
+The final threshold will be selected based on data quality considerations and cross-station prediction performance, rather than data retention alone.
 
 ## D6: Sea-level pressure (SLP) as a predictor
 
@@ -53,3 +120,6 @@ held-out station.
 - Dubai: 12.852%; RAK: 8.198%; Sharjah: 8.123%; Abu Dhabi: 6.605%.
 
 **Rationale:** SLP is meteorologically relevant, but long and uneven station-specific gaps would require extensive imputation and could distort the cross-station generalization comparison. Exclusion is a data-quality decision, not a claim that pressure is unimportant for rainfall.
+
+## D7 : Precipitation Quality Control
+
