@@ -59,7 +59,7 @@ def convert_units(df) -> pd.DataFrame:
     if 'SNDP' in converted_df.columns:
             converted_df['SNDP'] = converted_df['SNDP'] * 25.4 # Convert to mm
 
-    # convert wind speed from knots to km/s
+    # convert wind speed from knots to km/h
     if 'WDSP' in converted_df.columns:
         converted_df['WDSP'] = converted_df['WDSP'] * 1.852  # Convert to km/h
     if 'MXSPD' in converted_df.columns:

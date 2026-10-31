@@ -123,3 +123,7 @@ The final threshold will be selected based on data quality considerations and cr
 
 ## D7 : Precipitation Quality Control
 
+# D13: 
+adding local historical rainfall features to the meterological predictors will reduce mean per-station MAE under leave-one-station-out evaluation.
+Metric: mean of six station-level MAEs.
+Support criterion: Feature Set B achieves lower mean per-station MAE than Feature Set A, using identical held-out station-month obervations.
