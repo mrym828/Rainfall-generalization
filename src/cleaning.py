@@ -53,7 +53,7 @@ def convert_units(df) -> pd.DataFrame:
     if 'DEWP' in converted_df.columns:
         converted_df['DEWP'] = (converted_df['DEWP'] - 32) * 5/9
 
-    # Convert precipitation from hundredths of inches to mm
+    # Convert precipitation from inches to mm
     if 'PRCP' in converted_df.columns:
         converted_df['PRCP'] = converted_df['PRCP'] * 25.4  # Convert to mm
     if 'SNDP' in converted_df.columns:
